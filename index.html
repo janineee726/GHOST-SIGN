@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Peaceful Garden</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #dff3d8;
+      font-family: Arial, sans-serif;
+    }
+
+    #info {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="info">
+    Peaceful Garden<br>
+    1 = flower | 2 = tree | 3 = rain | 4 = night | 5 = sun
+  </div>
+
+  <canvas id="garden"></canvas>
+
+  <script>
+    const canvas = document.getElementById("garden");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let currentTool = "flower";
+    let isNight = false;
+    let rainOn = false;
+
+    let plants = [];
+    let raindrops = [];
+    let petals = [];
+
+    function drawBackground() {
+      if (isNight) {
+        ctx.fillStyle = "#1d2b3a";
+      } else {
+        ctx.fillStyle = "#dff3d8";
+      }
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function plantFlower(x, y) {
+      plants.push({
+        type: "flower",
+        x: x,
+        y: y,
+        size: 8,
+        maxSize: 22,
+        color: randomColor(["#ff8fab", "#ffc2d1", "#f7aef8", "#b8f2e6"])
+      });
+    }
+
+    function plantTree(x, y) {
+      plants.push({
+        type: "tree",
+        x: x,
+        y: y,
+        size: 15,
+        maxSize: 55
+      });
+    }
+
+    function drawFlower(plant) {
+      ctx.fillStyle = "#5f8d4e";
+      ctx.fillRect(plant.x - 2, plant.y, 4, plant.size * 2);
+
+      ctx.fillStyle = plant.color;
+      for (let i = 0; i < 6; i++) {
+        let angle = (Math.PI * 2 / 6) * i;
+        let px = plant.x + Math.cos(angle) * plant.size;
+        let py = plant.y + Math.sin(angle) * plant.size;
+        ctx.beginPath();
+        ctx.arc(px, py, plant.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = "#fff3b0";
+      ctx.beginPath();
+      ctx.arc(plant.x, plant.y, plant.size / 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawTree(plant) {
+      ctx.fillStyle = "#8b5e34";
+      ctx.fillRect(plant.x - plant.size / 6, plant.y, plant.size / 3, plant.size);
+
+      ctx.fillStyle = "#6ab04c";
+      ctx.beginPath();
+      ctx.arc(plant.x, plant.y, plant.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawPlants() {
+      plants.forEach(plant => {
+        if (plant.type === "flower") {
+          drawFlower(plant);
+        } else if (plant.type === "tree") {
+          drawTree(plant);
+        }
+      });
+    }
+
+    function growPlants() {
+      plants.forEach(plant => {
+        if (plant.size < plant.maxSize) {
+          plant.size += 1;
+        }
+      });
+    }
+
+    function makeRain() {
+      for (let i = 0; i < 8; i++) {
+        raindrops.push({
+          x: Math.random() * canvas.width,
+          y: 0,
+          speed: 4 + Math.random() * 4
+        });
+      }
+    }
+
+    function drawRain() {
+      ctx.strokeStyle = "#8ecae6";
+      ctx.lineWidth = 2;
+
+      raindrops.forEach(drop => {
+        ctx.beginPath();
+        ctx.moveTo(drop.x, drop.y);
+        ctx.lineTo(drop.x - 5, drop.y + 12);
+        ctx.stroke();
+
+        drop.y += drop.speed;
+      });
+
+      raindrops = raindrops.filter(drop => drop.y < canvas.height);
+    }
+
+    function addPetal() {
+      petals.push({
+        x: Math.random() * canvas.width,
+        y: 0,
+        size: 4 + Math.random() * 4,
+        speed: 1 + Math.random() * 2
+      });
+    }
+
+    function drawPetals() {
+      ctx.fillStyle = "#ffb3c6";
+
+      petals.forEach(petal => {
+        ctx.beginPath();
+        ctx.arc(petal.x, petal.y, petal.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        petal.y += petal.speed;
+        petal.x += Math.sin(petal.y * 0.03);
+      });
+
+      petals = petals.filter(petal => petal.y < canvas.height);
+    }
+
+    function randomColor(colors) {
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    canvas.addEventListener("click", function(event) {
+      if (currentTool === "flower") {
+        plantFlower(event.clientX, event.clientY);
+      } else if (currentTool === "tree") {
+        plantTree(event.clientX, event.clientY);
+      }
+    });
+
+    canvas.addEventListener("mousemove", function(event) {
+      if (Math.random() < 0.08) {
+        plantFlower(event.clientX, event.clientY);
+      }
+    });
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "1") {
+        currentTool = "flower";
+      }
+
+      if (event.key === "2") {
+        currentTool = "tree";
+      }
+
+      if (event.key === "3") {
+        rainOn = !rainOn;
+      }
+
+      if (event.key === "4") {
+        isNight = true;
+      }
+
+      if (event.key === "5") {
+        isNight = false;
+      }
+    });
+
+    setInterval(function() {
+      growPlants();
+    }, 1000);
+
+    setInterval(function() {
+      addPetal();
+
+      if (rainOn) {
+        makeRain();
+      }
+    }, 200);
+
+    function animate() {
+      drawBackground();
+      drawPlants();
+      drawPetals();
+
+      if (rainOn) {
+        drawRain();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
