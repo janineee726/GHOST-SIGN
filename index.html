@@ -1,183 +1,77 @@
-
-<!DOCTYPE html>
-<html>
-<head>
-  <title>My Garden</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-color: lightgreen;
-    }
-
-    #text {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background: white;
-      padding: 10px;
-      border-radius: 10px;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="text">
-    My Peaceful Garden<br>
-    Press 1 = flower, 2 = tree, 3 = rain, 4 = night
-  </div>
-
-  <canvas id="myCanvas"></canvas>
-
-  <script>
-    let canvas = document.getElementById("myCanvas");
-    let ctx = canvas.getContext("2d");
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let tool = "flower";
-    let night = false;
-    let rain = false;
-
-    let plants = [];
-    let drops = [];
-
-    function makeFlower(x, y) {
-      plants.push({
-        kind: "flower",
-        x: x,
-        y: y,
-        size: 10
-      });
-    }
-
-    function makeTree(x, y) {
-      plants.push({
-        kind: "tree",
-        x: x,
-        y: y,
-        size: 25
-      });
-    }
-
-    function drawFlower(p) {
-      ctx.fillStyle = "green";
-      ctx.fillRect(p.x - 2, p.y, 4, p.size * 2);
-
-      ctx.fillStyle = "pink";
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = "yellow";
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function drawTree(p) {
-      ctx.fillStyle = "brown";
-      ctx.fillRect(p.x - 5, p.y, 10, p.size);
-
-      ctx.fillStyle = "darkgreen";
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function drawRain() {
-      ctx.strokeStyle = "blue";
-
-      for (let i = 0; i < drops.length; i++) {
-        let d = drops[i];
-
-        ctx.beginPath();
-        ctx.moveTo(d.x, d.y);
-        ctx.lineTo(d.x, d.y + 10);
-        ctx.stroke();
-
-        d.y = d.y + 5;
-      }
-    }
-
-    function drawEverything() {
-      if (night == true) {
-        ctx.fillStyle = "darkblue";
-      } else {
-        ctx.fillStyle = "lightgreen";
-      }
-
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < plants.length; i++) {
-        let p = plants[i];
-
-        if (p.kind == "flower") {
-          drawFlower(p);
-        }
-
-        if (p.kind == "tree") {
-          drawTree(p);
-        }
-      }
-
-      if (rain == true) {
-        drawRain();
-      }
-    }
-
-    canvas.addEventListener("click", function(event) {
-      if (tool == "flower") {
-        makeFlower(event.clientX, event.clientY);
-      }
-
-      if (tool == "tree") {
-        makeTree(event.clientX, event.clientY);
-      }
-    });
-
-    canvas.addEventListener("mousemove", function(event) {
-      if (Math.random() < 0.03) {
-        makeFlower(event.clientX, event.clientY);
-      }
-    });
-
-    document.addEventListener("keydown", function(event) {
-      if (event.key == "1") {
-        tool = "flower";
-      }
-
-      if (event.key == "2") {
-        tool = "tree";
-      }
-
-      if (event.key == "3") {
-        rain = !rain;
-      }
-
-      if (event.key == "4") {
-        night = !night;
-      }
-    });
-
-    setInterval(function() {
-      for (let i = 0; i < plants.length; i++) {
-        plants[i].size = plants[i].size + 1;
-      }
-    }, 1000);
-
-    setInterval(function() {
-      if (rain == true) {
-        drops.push({
-          x: Math.random() * canvas.width,
-          y: 0
-        });
-      }
-
-      drawEverything();
-    }, 100);
-  </script>
-</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="GHOST SIGNS — When the city begins to fade. An interactive collage of signs, drawings, and found objects." />
+    <title>GHOST SIGNS — When the city begins to fade</title>
+    <link rel="icon" href="./assets/figma/20-25.svg" type="image/svg+xml" />
+    <link rel="preload" as="image" href="./assets/media/39-837.webp" imagesrcset="./assets/media/39-837-720.webp 720w, ./assets/media/39-837-1440.webp 1440w, ./assets/media/39-837.webp 2880w" imagesizes="100vw" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./assets/highlights/font.css" />
+    <script defer src="./bootstrap.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#highlights">Skip to Highlights</a>
+    <main class="scroll-story" id="story" aria-label="GHOST SIGNS: five scrolling scenes">
+      <div class="stage">
+        <section class="screen hero" id="home" aria-labelledby="hero-title">
+          <div class="hero-sheet motion-layer">
+            <div class="artboard hero-artboard" data-design-width="1440" data-design-height="900">
+              <h1 class="sr-only" id="hero-title">When the city begins to fade</h1>
+              <div class="fixed-art" id="hero-fixed" aria-hidden="true"></div>
+              <div class="drag-space hero-objects" id="hero-objects" aria-label="Draggable collage objects"></div>
+              <button class="menu-dot" id="menu-toggle" type="button" aria-label="Open navigation" aria-controls="navigation" aria-expanded="false">
+                <img src="./assets/figma/20-25.svg" alt="" draggable="false" width="33" height="33" />
+              </button>
+            </div>
+          </div>
+          <a class="scroll-cue" href="#drawings" aria-label="Scroll to explore Drawings">
+            <span>Scroll to explore</span>
+            <svg viewBox="0 0 32 44" aria-hidden="true"><path d="M16 3v32M5 24l11 12 11-12" /></svg>
+          </a>
+        </section>
+        <section class="screen interlude" id="drawings" aria-labelledby="drawings-title" inert aria-hidden="true">
+          <div class="interlude-sheet motion-layer">
+            <h2 class="sr-only" id="drawings-title">Drawings</h2>
+            <div class="artboard interlude-artboard" data-design-width="1362" data-design-height="908" data-fit="cover">
+              <img class="interlude-drawing" src="./assets/media/23-52.webp" srcset="./assets/media/23-52-681.webp 681w, ./assets/media/23-52-1362.webp 1362w, ./assets/media/23-52.webp 2724w" sizes="(max-aspect-ratio: 8/5) 94.58333vw, 151.33333vh" data-responsive decoding="async" fetchpriority="low" width="1362" height="908" alt="Mint-green doodles of cats, butterflies, mushrooms, headphones, and hearts" draggable="false" />
+            </div>
+            <button class="draw-launcher" id="draw-launcher" type="button" aria-label="Open drawing board" aria-haspopup="dialog" aria-controls="drawing-board" aria-expanded="false">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M13 9h33v41H13zM9 54h41M24 50l-5 10M38 50l5 10"/><path class="draw-pencil" d="m33 35 18-24 6 5-18 24-9 5zM48 15l6 5"/><path class="draw-mark" d="M20 33c5-10 1 12 7 3s2 6 8 2"/></svg>
+              <span>Draw</span>
+            </button>
+          </div>
+        </section>
+        <section class="screen featured layered-scene" id="highlights" aria-labelledby="highlights-title" inert aria-hidden="true">
+          <div class="featured-background scene-background motion-layer" data-figma-node="31:747">
+            <div class="artboard" id="featured-background-artboard">
+              <h2 class="sr-only" id="highlights-title">Highlights.</h2>
+            </div>
+            <div class="scene-heading" id="featured-title" aria-hidden="true"></div>
+          </div>
+          <div class="featured-content scene-content motion-layer">
+            <div class="scene-panel">
+              <div class="artboard panel-artboard" data-design-width="1440" data-design-height="900">
+                <div class="white-board drag-space" id="white-board" data-figma-node="81:1065" aria-label="Highlights board: drag objects within the white frame"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <nav class="navigation" id="navigation" aria-label="Page navigation" hidden>
+      <p class="navigation-title">GHOST SIGNS</p>
+      <a href="#home">01 / When the city begins to fade</a>
+      <a href="#drawings">02 / Drawings</a>
+      <a href="#highlights">03 / Highlights</a>
+      <a href="#sketches">04 / The Sketches</a>
+      <a href="#collection">05 / The Collection</a>
+      <button id="reset-collage" type="button">Reset all objects</button>
+    </nav>
+    <p class="sr-only" id="drag-help">Drag with a mouse or finger. Use the arrow keys to move, Shift to move faster, Home to reset, and Escape to cancel a drag. Double-click home page objects to reset them. Highlights objects stay within the white board. Click a character, or press Enter or Space, to read its story. Use the back button or Escape to close the story.</p>
+    <p class="sr-only" id="interaction-status" role="status" aria-live="polite"></p>
+    <noscript><p class="no-script">Enable JavaScript to use the scrolling animations and draggable objects.</p></noscript>
+  </body>
 </html>
-```

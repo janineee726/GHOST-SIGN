@@ -1,0 +1,16 @@
+{
+  "name": "ghost-signs-scroll-study",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Figma reproduction in HTML, CSS and vanilla JavaScript",
+  "scripts": {
+    "dev": "node server.mjs",
+    "start": "node server.mjs",
+    "build": "node scripts/build-file-preview.mjs",
+    "check:file": "node scripts/build-file-preview.mjs --check"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}
